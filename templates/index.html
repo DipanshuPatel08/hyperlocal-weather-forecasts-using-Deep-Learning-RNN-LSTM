@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyperlocal Weather Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <!-- Chart.js for graphing -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="p-4 sm:p-6 lg:p-8">
+
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Left Column -->
+        <div class="lg:col-span-1 flex flex-col gap-6">
+            <div class="card p-6 flex flex-col justify-between h-48">
+                <div>
+                    <h2 class="font-bold text-xl">Anuppur, Madhya Pradesh</h2>
+                    <p id="date" class="text-sm text-gray-400">Tuesday, 22 July</p>
+                </div>
+                <p id="time" class="text-5xl font-bold text-right">19:46</p>
+            </div>
+            <div class="card p-6">
+                <h3 class="font-bold text-xl mb-4">Air Quality & Gases (ppm)</h3>
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                        <p class="text-sm text-gray-400">AQI</p>
+                        <p id="current-aqi" class="font-bold text-2xl">-</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400">CO</p>
+                        <p id="current-co" class="font-bold text-2xl">-</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400">NH3</p>
+                        <p id="current-nh3" class="font-bold text-2xl">-</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400">CO2</p>
+                        <p id="current-co2" class="font-bold text-2xl">-</p>
+                    </div>
+                     <div>
+                        <p class="text-sm text-gray-400">Alcohol</p>
+                        <p id="current-alcohol" class="font-bold text-2xl">-</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400">LPG</p>
+                        <p id="current-lpg" class="font-bold text-2xl">-</p>
+                    </div>
+                    <div class="col-span-3 pt-2">
+                        <p class="text-sm text-gray-400">CH4</p>
+                        <p id="current-ch4" class="font-bold text-2xl">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="lg:col-span-2 flex flex-col gap-6">
+            <div class="card p-6">
+                <div class="flex justify-between items-start">
+                    <!-- Main Temp Display -->
+                    <div class="flex-1">
+                        <p id="status" class="text-sm text-gray-400 mb-2">Connecting...</p>
+                        <div class="flex items-center gap-4">
+                            <div id="main-weather-icon" class="w-24 h-24">
+                                <!-- Icon will be inserted by JS -->
+                            </div>
+                            <div>
+                                <p id="current-temp" class="text-7xl font-bold">--°</p>
+                                <p id="weather-condition" class="text-lg text-gray-300">Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Additional Params -->
+                    <div class="flex flex-col justify-around items-center w-32">
+                        <div class="param-card">
+                            <div id="humidity-icon" class="w-8 h-8 mx-auto"></div>
+                            <p id="current-humidity" class="font-bold text-lg">--%</p>
+                            <p class="text-xs text-gray-400">Humidity</p>
+                        </div>
+                         <div class="param-card mt-4">
+                            <div id="pressure-icon" class="w-8 h-8 mx-auto"></div>
+                            <p id="current-pressure" class="font-bold text-lg">--</p>
+                            <p class="text-xs text-gray-400">Pressure</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Updated Forecast Card -->
+            <div class="card p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-xl">Hourly Forecast</h3>
+                    <div id="chart-toggles" class="flex items-center bg-slate-700 rounded-lg p-1">
+                        <button data-type="temp" class="chart-toggle-btn active">Temperature</button>
+                        <button data-type="precipitation" class="chart-toggle-btn">Precipitation</button>
+                        <button data-type="aqi" class="chart-toggle-btn">AQI</button>
+                    </div>
+                </div>
+                <div id="forecast-container" class="h-64">
+                     <canvas id="forecastChart"></canvas>
+                     <div id="forecast-placeholder" class="w-full h-full flex items-center justify-center text-center text-gray-400">
+                        <p>Waiting for enough data to generate forecast...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+</body>
+</html>

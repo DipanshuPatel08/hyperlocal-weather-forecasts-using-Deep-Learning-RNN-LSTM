@@ -1,0 +1,65 @@
+/* Custom font and smooth transitions */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0f172a; /* Dark blue-gray background */
+    color: #e2e8f0; /* Light gray text */
+    min-height: 100vh;
+}
+
+/* Import the font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+
+.card {
+    background-color: rgba(30, 41, 59, 0.5); /* Semi-transparent card background */
+    border-radius: 1.5rem; /* More rounded corners */
+    border: 1px solid #334155;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.param-card, .forecast-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
+.forecast-card {
+    background-color: #334155;
+    border-radius: 1rem;
+    padding: 1rem 0.5rem;
+    width: 100%;
+}
+
+/* Styles for the new chart toggle buttons */
+.chart-toggle-btn {
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #94a3b8; /* Muted text color */
+    transition: all 0.2s ease-in-out;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.chart-toggle-btn.active {
+    background-color: #475569; /* Darker background for active */
+    color: #f1f5f9; /* White text for active */
+}
+
+.status-connected { color: #4ade80; } /* Brighter green */
+.status-predicting { color: #60a5fa; } /* Brighter blue */
+.status-error { color: #f87171; } /* Brighter red */
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
