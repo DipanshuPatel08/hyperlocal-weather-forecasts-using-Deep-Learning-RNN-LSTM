@@ -1,65 +1,274 @@
-/* Custom font and smooth transitions */
+/* Import Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #0f172a; /* Dark blue-gray background */
-    color: #e2e8f0; /* Light gray text */
+    background-color: #0f172a;
+    color: #e2e8f0;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
-/* Import the font from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
-
-.card {
-    background-color: rgba(30, 41, 59, 0.5); /* Semi-transparent card background */
-    border-radius: 1.5rem; /* More rounded corners */
-    border: 1px solid #334155;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
+/* Glass morphism cards */
+.glass-card {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
 }
 
-.param-card, .forecast-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
 }
 
-.forecast-card {
-    background-color: #334155;
+.glass-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(99, 102, 241, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Metric cards */
+.metric-card {
+    background: rgba(51, 65, 85, 0.3);
+    border: 1px solid rgba(71, 85, 105, 0.3);
     border-radius: 1rem;
-    padding: 1rem 0.5rem;
-    width: 100%;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Styles for the new chart toggle buttons */
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    transition: left 0.5s ease;
+}
+
+.metric-card:hover::before {
+    left: 100%;
+}
+
+.metric-card:hover {
+    background: rgba(51, 65, 85, 0.5);
+    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Chart toggle buttons */
 .chart-toggle-btn {
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #94a3b8; /* Muted text color */
-    transition: all 0.2s ease-in-out;
+    color: #94a3b8;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     border: none;
     background-color: transparent;
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-toggle-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.3s ease;
+}
+
+.chart-toggle-btn:hover::before {
+    left: 100%;
 }
 
 .chart-toggle-btn.active {
-    background-color: #475569; /* Darker background for active */
-    color: #f1f5f9; /* White text for active */
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 
+        0 4px 14px rgba(99, 102, 241, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.status-connected { color: #4ade80; } /* Brighter green */
-.status-predicting { color: #60a5fa; } /* Brighter blue */
-.status-error { color: #f87171; } /* Brighter red */
-
-.fade-in {
-    animation: fadeIn 0.5s ease-in-out;
+.chart-toggle-btn:hover:not(.active) {
+    background-color: rgba(71, 85, 105, 0.3);
+    color: #e2e8f0;
 }
 
+/* Status indicators */
+.status-connected { 
+    color: #10b981; 
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.status-predicting { 
+    color: #3b82f6; 
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+.status-error { 
+    color: #ef4444; 
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+/* Animations */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { 
+        opacity: 0; 
+        transform: translateY(20px) scale(0.95);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0);
+    }
+}
+
+@keyframes glow {
+    from { 
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+    }
+    to { 
+        box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+}
+
+.animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+/* Connection indicator */
+#connection-indicator {
+    transition: all 0.3s ease;
+}
+
+#status-dot {
+    transition: all 0.3s ease;
+}
+
+#status-dot.connected {
+    background-color: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+#status-dot.predicting {
+    background-color: #3b82f6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+#status-dot.error {
+    background-color: #ef4444;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #6366f1, #8b5cf6);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #4f46e5, #7c3aed);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .glass-card {
+        border-radius: 1.25rem;
+    }
+    
+    .chart-toggle-btn span {
+        display: none;
+    }
+    
+    .metric-card {
+        padding: 1rem;
+    }
+}
+
+/* Chart container enhancements */
+#forecast-container {
+    position: relative;
+    border: 1px solid rgba(71, 85, 105, 0.3);
+    background: rgba(15, 23, 42, 0.3);
+}
+
+#forecast-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    z-index: 1;
+}
+
+/* Loading spinner */
+.spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(99, 102, 241, 0.3);
+    border-top: 3px solid #6366f1;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
