@@ -1,6 +1,6 @@
 # Real-Time Hyperlocal Weather & Air Quality Forecasting Station
 
-![Dashboard Screenshot](Screenshot.png) <!-- **Important:** Replace this path with the actual path to your screenshot after you upload it to your repo -->
+![Dashboard Screenshot](Screenshort.png) <!-- **Important:** Replace this path with the actual path to your screenshot after you upload it to your repo -->
 
 This project is an end-to-end IoT and Deep Learning application that provides real-time, hyperlocal weather and air quality forecasts. An Arduino sensor array streams live environmental data to a Flask server, which uses a trained RNN-LSTM model to predict future conditions and displays everything on a dynamic, modern web dashboard.
 
