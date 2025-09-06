@@ -5,111 +5,296 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hyperlocal Weather Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'ui-sans-serif', 'system-ui'],
+                    },
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        accent: '#06b6d4',
+                        dark: {
+                            50: '#f8fafc',
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    }
+                }
+            }
+        }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <!-- Chart.js for graphing -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body class="p-4 sm:p-6 lg:p-8">
-
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        <!-- Left Column -->
-        <div class="lg:col-span-1 flex flex-col gap-6">
-            <div class="card p-6 flex flex-col justify-between h-48">
-                <div>
-                    <h2 class="font-bold text-xl">Anuppur, Madhya Pradesh</h2>
-                    <p id="date" class="text-sm text-gray-400">Tuesday, 22 July</p>
-                </div>
-                <p id="time" class="text-5xl font-bold text-right">19:46</p>
-            </div>
-            <div class="card p-6">
-                <h3 class="font-bold text-xl mb-4">Air Quality & Gases (ppm)</h3>
-                <div class="grid grid-cols-3 gap-4 text-center">
-                    <div>
-                        <p class="text-sm text-gray-400">AQI</p>
-                        <p id="current-aqi" class="font-bold text-2xl">-</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-400">CO</p>
-                        <p id="current-co" class="font-bold text-2xl">-</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-400">NH3</p>
-                        <p id="current-nh3" class="font-bold text-2xl">-</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-400">CO2</p>
-                        <p id="current-co2" class="font-bold text-2xl">-</p>
-                    </div>
-                     <div>
-                        <p class="text-sm text-gray-400">Alcohol</p>
-                        <p id="current-alcohol" class="font-bold text-2xl">-</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-400">LPG</p>
-                        <p id="current-lpg" class="font-bold text-2xl">-</p>
-                    </div>
-                    <div class="col-span-3 pt-2">
-                        <p class="text-sm text-gray-400">CH4</p>
-                        <p id="current-ch4" class="font-bold text-2xl">-</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="lg:col-span-2 flex flex-col gap-6">
-            <div class="card p-6">
-                <div class="flex justify-between items-start">
-                    <!-- Main Temp Display -->
-                    <div class="flex-1">
-                        <p id="status" class="text-sm text-gray-400 mb-2">Connecting...</p>
-                        <div class="flex items-center gap-4">
-                            <div id="main-weather-icon" class="w-24 h-24">
-                                <!-- Icon will be inserted by JS -->
-                            </div>
-                            <div>
-                                <p id="current-temp" class="text-7xl font-bold">--°</p>
-                                <p id="weather-condition" class="text-lg text-gray-300">Loading...</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Additional Params -->
-                    <div class="flex flex-col justify-around items-center w-32">
-                        <div class="param-card">
-                            <div id="humidity-icon" class="w-8 h-8 mx-auto"></div>
-                            <p id="current-humidity" class="font-bold text-lg">--%</p>
-                            <p class="text-xs text-gray-400">Humidity</p>
-                        </div>
-                         <div class="param-card mt-4">
-                            <div id="pressure-icon" class="w-8 h-8 mx-auto"></div>
-                            <p id="current-pressure" class="font-bold text-lg">--</p>
-                            <p class="text-xs text-gray-400">Pressure</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Updated Forecast Card -->
-            <div class="card p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-xl">Hourly Forecast</h3>
-                    <div id="chart-toggles" class="flex items-center bg-slate-700 rounded-lg p-1">
-                        <button data-type="temp" class="chart-toggle-btn active">Temperature</button>
-                        <button data-type="precipitation" class="chart-toggle-btn">Precipitation</button>
-                        <button data-type="aqi" class="chart-toggle-btn">AQI</button>
-                    </div>
-                </div>
-                <div id="forecast-container" class="h-64">
-                     <canvas id="forecastChart"></canvas>
-                     <div id="forecast-placeholder" class="w-full h-full flex items-center justify-center text-center text-gray-400">
-                        <p>Waiting for enough data to generate forecast...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+<body class="min-h-screen bg-gradient-to-br from-dark-900 via-slate-900 to-dark-900 text-white overflow-x-hidden">
+    
+    <!-- Background Elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1s;"></div>
+        <div class="absolute top-1/2 left-1/2 w-72 h-72 bg-secondary/5 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 2s;"></div>
     </div>
+
+    <!-- Header -->
+    <header class="relative z-10 p-6 lg:p-8">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-gradient-to-r from-primary to-accent rounded-xl flex items-center justify-center">
+                    <i data-lucide="cloud-drizzle" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                        Hyperlocal Weather
+                    </h1>
+                    <p class="text-sm text-gray-400">AI-Powered Forecasting Station</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div id="connection-indicator" class="flex items-center space-x-2 px-3 py-2 rounded-full bg-dark-800/50 backdrop-blur-sm border border-dark-700">
+                    <div id="status-dot" class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    <span id="connection-text" class="text-sm font-medium text-gray-300">Connecting...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10 px-6 lg:px-8 pb-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Location & Time Card -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="glass-card p-8 text-center animate-fade-in">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-center space-x-2 mb-2">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-accent"></i>
+                            <h2 class="text-xl font-bold">Gwalior, Madhya Pradesh</h2>
+                        </div>
+                        <p id="date" class="text-gray-400">Tuesday, 22 July</p>
+                    </div>
+                    <div class="relative">
+                        <p id="time" class="text-6xl font-black bg-gradient-to-r from-white via-blue-100 to-accent bg-clip-text text-transparent">
+                            19:46
+                        </p>
+                        <div class="absolute -inset-1 bg-gradient-to-r from-primary/20 to-accent/20 blur-xl opacity-50"></div>
+                    </div>
+                </div>
+
+                <!-- Air Quality Card -->
+                <div class="glass-card p-6 animate-slide-up" style="animation-delay: 0.2s;">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="p-2 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-lg">
+                            <i data-lucide="wind" class="w-5 h-5 text-green-400"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Air Quality & Gases</h3>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="metric-card group">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-400">AQI</span>
+                                <div class="p-1.5 bg-primary/20 rounded-lg group-hover:bg-primary/30 transition-colors">
+                                    <i data-lucide="activity" class="w-4 h-4 text-primary"></i>
+                                </div>
+                            </div>
+                            <p id="current-aqi" class="text-3xl font-bold mt-2">-</p>
+                        </div>
+                        
+                        <div class="metric-card group">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-400">CO</span>
+                                <div class="p-1.5 bg-red-500/20 rounded-lg group-hover:bg-red-500/30 transition-colors">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-red-400"></i>
+                                </div>
+                            </div>
+                            <p id="current-co" class="text-2xl font-bold mt-2">-</p>
+                            <span class="text-xs text-gray-500">ppm</span>
+                        </div>
+
+                        <div class="metric-card group">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-400">NH₃</span>
+                                <div class="p-1.5 bg-yellow-500/20 rounded-lg group-hover:bg-yellow-500/30 transition-colors">
+                                    <i data-lucide="droplets" class="w-4 h-4 text-yellow-400"></i>
+                                </div>
+                            </div>
+                            <p id="current-nh3" class="text-2xl font-bold mt-2">-</p>
+                            <span class="text-xs text-gray-500">ppm</span>
+                        </div>
+
+                        <div class="metric-card group">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-400">CO₂</span>
+                                <div class="p-1.5 bg-green-500/20 rounded-lg group-hover:bg-green-500/30 transition-colors">
+                                    <i data-lucide="leaf" class="w-4 h-4 text-green-400"></i>
+                                </div>
+                            </div>
+                            <p id="current-co2" class="text-2xl font-bold mt-2">-</p>
+                            <span class="text-xs text-gray-500">ppm</span>
+                        </div>
+
+                        <div class="metric-card group">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-400">Alcohol</span>
+                                <div class="p-1.5 bg-purple-500/20 rounded-lg group-hover:bg-purple-500/30 transition-colors">
+                                    <i data-lucide="beaker" class="w-4 h-4 text-purple-400"></i>
+                                </div>
+                            </div>
+                            <p id="current-alcohol" class="text-2xl font-bold mt-2">-</p>
+                            <span class="text-xs text-gray-500">ppm</span>
+                        </div>
+
+                        <div class="metric-card group">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-400">LPG</span>
+                                <div class="p-1.5 bg-orange-500/20 rounded-lg group-hover:bg-orange-500/30 transition-colors">
+                                    <i data-lucide="flame" class="w-4 h-4 text-orange-400"></i>
+                                </div>
+                            </div>
+                            <p id="current-lpg" class="text-2xl font-bold mt-2">-</p>
+                            <span class="text-xs text-gray-500">ppm</span>
+                        </div>
+
+                        <div class="metric-card group col-span-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-gray-400">CH₄ (Methane)</span>
+                                <div class="p-1.5 bg-indigo-500/20 rounded-lg group-hover:bg-indigo-500/30 transition-colors">
+                                    <i data-lucide="zap" class="w-4 h-4 text-indigo-400"></i>
+                                </div>
+                            </div>
+                            <p id="current-ch4" class="text-3xl font-bold mt-2">-</p>
+                            <span class="text-xs text-gray-500">ppm</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Weather Display -->
+            <div class="lg:col-span-8 space-y-6">
+                <!-- Current Weather Card -->
+                <div class="glass-card p-8 animate-slide-up" style="animation-delay: 0.1s;">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-6">
+                                <div id="main-weather-icon" class="w-24 h-24 relative">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-accent/20 to-primary/20 rounded-2xl blur-xl"></div>
+                                    <div class="relative w-full h-full flex items-center justify-center">
+                                        <i data-lucide="cloud-sun" class="w-16 h-16 text-accent animate-bounce-slow"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-baseline space-x-2">
+                                        <span id="current-temp" class="text-7xl font-black bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                                            --°
+                                        </span>
+                                        <span class="text-2xl font-medium text-gray-400">C</span>
+                                    </div>
+                                    <p id="weather-condition" class="text-xl text-gray-300 mt-2">Loading...</p>
+                                    <p id="status" class="text-sm font-medium text-accent mt-1">Initializing sensors...</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Weather Parameters -->
+                        <div class="flex space-x-6">
+                            <div class="metric-card group text-center">
+                                <div class="p-3 bg-blue-500/20 rounded-xl mb-3 group-hover:bg-blue-500/30 transition-colors">
+                                    <i data-lucide="droplets" class="w-6 h-6 text-blue-400"></i>
+                                </div>
+                                <p id="current-humidity" class="text-2xl font-bold">--%</p>
+                                <p class="text-sm text-gray-400">Humidity</p>
+                            </div>
+                            
+                            <div class="metric-card group text-center">
+                                <div class="p-3 bg-purple-500/20 rounded-xl mb-3 group-hover:bg-purple-500/30 transition-colors">
+                                    <i data-lucide="gauge" class="w-6 h-6 text-purple-400"></i>
+                                </div>
+                                <p id="current-pressure" class="text-2xl font-bold">--</p>
+                                <p class="text-sm text-gray-400">hPa</p>
+                            </div>
+
+                            <div class="metric-card group text-center">
+                                <div class="p-3 bg-green-500/20 rounded-xl mb-3 group-hover:bg-green-500/30 transition-colors">
+                                    <i data-lucide="sun" class="w-6 h-6 text-green-400"></i>
+                                </div>
+                                <p id="current-light" class="text-2xl font-bold">--</p>
+                                <p class="text-sm text-gray-400">Lux</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forecast Card -->
+                <div class="glass-card p-6 animate-slide-up" style="animation-delay: 0.3s;">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-lg">
+                                <i data-lucide="trending-up" class="w-5 h-5 text-primary"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">AI Forecast</h3>
+                        </div>
+                        
+                        <div id="chart-toggles" class="flex bg-dark-800/50 rounded-xl p-1 backdrop-blur-sm border border-dark-700">
+                            <button data-type="temp" class="chart-toggle-btn active flex items-center space-x-2">
+                                <i data-lucide="thermometer" class="w-4 h-4"></i>
+                                <span>Temperature</span>
+                            </button>
+                            <button data-type="precipitation" class="chart-toggle-btn flex items-center space-x-2">
+                                <i data-lucide="cloud-rain" class="w-4 h-4"></i>
+                                <span>Rain</span>
+                            </button>
+                            <button data-type="aqi" class="chart-toggle-btn flex items-center space-x-2">
+                                <i data-lucide="wind" class="w-4 h-4"></i>
+                                <span>AQI</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="forecast-container" class="relative h-80 rounded-xl bg-dark-800/30 border border-dark-700">
+                        <canvas id="forecastChart" class="w-full h-full rounded-xl"></canvas>
+                        <div id="forecast-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                            <div class="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mb-4"></div>
+                            <p class="text-gray-400 font-medium">Gathering sensor data...</p>
+                            <p class="text-sm text-gray-500 mt-2">AI prediction will be available shortly</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 mt-12 px-6 lg:px-8 pb-6">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="flex items-center justify-center space-x-6 text-sm text-gray-500">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="cpu" class="w-4 h-4"></i>
+                    <span>Powered by LSTM Neural Networks</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="activity" class="w-4 h-4"></i>
+                    <span>Real-time IoT Sensors</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="wifi" class="w-4 h-4"></i>
+                    <span>Live Data Stream</span>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
 </body>
